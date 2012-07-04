@@ -55,6 +55,10 @@ public class Model
      * Random number generator (to flip a coin and roll a dice)
      */
     private Random ranGen;
+    /**
+     * Tool class for saving settings and player names
+     */
+    private StoredData data;
 
     /**
      * Constructor.<br/> Don't forget to add views
@@ -67,9 +71,11 @@ public class Model
         this.listener = null;
         this.selectedMode = mode;
         this.selectedPlayer = PL_NONE;
-        this.startHP = 20;
-        this.maxPSN = 10;
         this.ranGen = new Random();
+        this.data = new StoredData();
+        this.startHP = Integer.parseInt(data.read(StoredData.RECORD_INITHP));
+        this.maxPSN = Integer.parseInt(data.read(StoredData.RECORD_MAXPSN));
+        
         makePlayers();
     }
     
@@ -78,10 +84,12 @@ public class Model
      */
     private void makePlayers()
     {
+        String name;
         players = new Vector(selectedMode);
         for (int i = 0; i < selectedMode; i++)
         {
-            Player p = new Player(i, "Player " + (i+1), startHP, maxPSN);
+            name = data.read(i+1);
+            Player p = new Player(i, name, startHP, maxPSN);
             players.addElement(p);
         }
         updateViews();
@@ -127,6 +135,7 @@ public class Model
         {
             Player p = (Player) players.elementAt(selectedPlayer);
             p.setName(name);
+            data.write(selectedPlayer+1, name);
             updateViews();
         }
     }
@@ -247,6 +256,7 @@ public class Model
     public void setMaxPSN(int maxPSN)
     {
         this.maxPSN = maxPSN;
+        data.write(StoredData.RECORD_MAXPSN, maxPSN+"");
         makePlayers();
     }
 
@@ -258,6 +268,7 @@ public class Model
     public void setStartHP(int startHP)
     {
         this.startHP = startHP;
+        data.write(StoredData.RECORD_INITHP, startHP+"");
         makePlayers();
     }
     

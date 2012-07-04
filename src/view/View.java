@@ -16,6 +16,7 @@ import utils.ModelListener;
  */
 public class View extends Canvas implements ModelListener, CommandListener
 {
+    
 
     /**
      * Controler
@@ -146,7 +147,9 @@ public class View extends Canvas implements ModelListener, CommandListener
      */
     private void paintButtons(Graphics g) throws IOException
     {
-        String path = (ctrl.getSelectedAction() == Controler.ACTION_HP) ? "/hp.png" : "/psn.png";
+        String path;
+        if(hasPointerEvents()) { path = (ctrl.getSelectedAction() == Controler.ACTION_DEC) ? "/minus.png" : "/plus.png"; }
+        else { path = (ctrl.getSelectedType() == Controler.TYPE_HP) ? "/hp.png" : "/psn.png"; }
 
 
         Image action = Image.createImage(path);
@@ -244,11 +247,97 @@ public class View extends Canvas implements ModelListener, CommandListener
     }
 
     /**
+     * Tactile events "on pressed"
+     * 
+     * @param x value on x-axis
+     * @param y value on y-axis
+     */
+    protected void pointerPressed(int x, int y)
+    {
+        int npl = players.size();
+        int yval[] = getYZone(32, npl);
+        int xval[] = getXZone();
+        
+        int i = 0;
+        while(y > yval[i])
+        {
+            i++;
+        }
+        
+        int j = 0;
+        while(x > xval[j])
+        {
+            j++;
+        }
+        
+        switch(i)
+        {
+            case 1 : // Zone du bouton
+                ctrl.switchAction();
+                break;
+            case 2 : 
+                ctrl.selectPlayer(0);
+                break;
+            case 3 :
+                ctrl.selectPlayer(1);
+                break;
+            case 4 : 
+                ctrl.selectPlayer(2);
+                break;
+            case 5 : 
+                ctrl.selectPlayer(3);
+                break;
+        }
+        
+        switch(j)
+        {
+            case 0 : 
+                ctrl.switchUI(new EditNameUI(this, ctrl));
+                break;
+            case 1 : 
+                ctrl.setSelectedType(Controler.TYPE_HP);
+                ctrl.edit();
+                break;
+            case 2 :
+                ctrl.setSelectedType(Controler.TYPE_PSN);
+                ctrl.edit();
+        }
+       
+        
+    }
+    
+    private int[] getYZone(int y0, int nbz)
+    {
+        int yzone[] = new int[nbz];
+        int dy = (getHeight() - y0) / nbz;
+        int ycur = y0;
+        
+        
+        for(int i = 0; i < yzone.length; i++)
+        {
+            yzone[i] = ycur;
+            ycur += dy;
+        }
+        
+        return yzone;
+    }
+    
+    private int[] getXZone()
+    {
+        int marginleft = getWidth() / 10;
+        int xnom = 0 + marginleft;
+        int xhp = getWidth() / 2 + marginleft;
+        int xpsn = getWidth() * 3 / 4 + marginleft;
+        
+        return new int[]{xnom,xhp,xpsn};
+    }
+    
+    /**
      * Events "onKeyPressed"-like
      *
      * @param keyCode
      */
-    public void keyPressed(int keyCode)
+    protected void keyPressed(int keyCode)
     {
         if (winner < 0)
         {
@@ -257,7 +346,8 @@ public class View extends Canvas implements ModelListener, CommandListener
             {
                 case KEY_NUM1:
                     ctrl.selectPlayer(0);
-                    ctrl.edit(true);
+                    ctrl.setSelectedAction(Controler.ACTION_INC);
+                    ctrl.edit();
                     break;
                 case KEY_NUM2:
                     ctrl.selectPlayer(0);
@@ -265,11 +355,13 @@ public class View extends Canvas implements ModelListener, CommandListener
                     break;
                 case KEY_NUM3:
                     ctrl.selectPlayer(0);
-                    ctrl.edit(false);
+                    ctrl.setSelectedAction(Controler.ACTION_DEC);
+                    ctrl.edit();
                     break;
                 case KEY_NUM4:
                     ctrl.selectPlayer(1);
-                    ctrl.edit(true);
+                    ctrl.setSelectedAction(Controler.ACTION_INC);
+                    ctrl.edit();
                     break;
                 case KEY_NUM5:
                     ctrl.selectPlayer(1);
@@ -277,11 +369,13 @@ public class View extends Canvas implements ModelListener, CommandListener
                     break;
                 case KEY_NUM6:
                     ctrl.selectPlayer(1);
-                    ctrl.edit(false);
+                    ctrl.setSelectedAction(Controler.ACTION_DEC);
+                    ctrl.edit();
                     break;
                 case KEY_NUM7:
                     ctrl.selectPlayer(2);
-                    ctrl.edit(true);
+                    ctrl.setSelectedAction(Controler.ACTION_INC);
+                    ctrl.edit();
                     break;
                 case KEY_NUM8:
                     ctrl.selectPlayer(2);
@@ -289,11 +383,13 @@ public class View extends Canvas implements ModelListener, CommandListener
                     break;
                 case KEY_NUM9:
                     ctrl.selectPlayer(2);
-                    ctrl.edit(false);
+                    ctrl.setSelectedAction(Controler.ACTION_DEC);
+                    ctrl.edit();
                     break;
                 case KEY_STAR:
                     ctrl.selectPlayer(3);
-                    ctrl.edit(true);
+                    ctrl.setSelectedAction(Controler.ACTION_INC);
+                    ctrl.edit();
                     break;
                 case KEY_NUM0:
                     ctrl.selectPlayer(3);
@@ -301,7 +397,8 @@ public class View extends Canvas implements ModelListener, CommandListener
                     break;
                 case KEY_POUND:
                     ctrl.selectPlayer(3);
-                    ctrl.edit(false);
+                    ctrl.setSelectedAction(Controler.ACTION_DEC);
+                    ctrl.edit();
                     break;
             }
 
@@ -311,13 +408,15 @@ public class View extends Canvas implements ModelListener, CommandListener
             switch (gameCode)
             {
                 case FIRE:
-                    ctrl.switchAction();
+                    ctrl.switchType();
                     break;
                 case UP:
-                    ctrl.edit(true);
+                    ctrl.setSelectedAction(Controler.ACTION_INC);
+                    ctrl.edit();
                     break;
                 case DOWN:
-                    ctrl.edit(false);
+                    ctrl.setSelectedAction(Controler.ACTION_DEC);
+                    ctrl.edit();
                     break;
                 case LEFT:
                     nextPl = nextPlayer(false);

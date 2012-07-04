@@ -14,13 +14,20 @@ public class Controler
 {
     /**
      * Action related to Health Points
-     */
+     *
     public static int ACTION_HP = 0;
     
     /**
      * Action related to Poison
-     */
+     *
     public static int ACTION_PSN = 1;
+     */
+    
+    public static int ACTION_INC = 0;
+    public static int ACTION_DEC = 1;
+    
+    public static int TYPE_HP = 2;
+    public static int TYPE_PSN = 3;
     
     /**
      * Model
@@ -31,6 +38,7 @@ public class Controler
      * Current action
      */
     private int selectedAction;
+    private int selectedType;
     
     /**
      * Main class
@@ -43,16 +51,33 @@ public class Controler
     public Controler(Run run)
     {
         this.run = run;
-        this.selectedAction = ACTION_HP;
+        this.selectedAction = ACTION_DEC;
+        this.selectedType = TYPE_HP;
     }
 
     /**
      * Edit a player counter
      * @param inc True if increase, false if decrease
-     */
+     *
     public void edit(boolean inc)
     {
         boolean hp = selectedAction == ACTION_HP ;
+        
+        if(inc)
+        {
+            model.incr(hp);
+        }
+        else
+        {
+            model.decr(hp);
+        }
+    }
+     */
+    
+    public void edit()
+    {
+        boolean inc = selectedAction == ACTION_INC ;
+        boolean hp = selectedType == TYPE_HP;
         
         if(inc)
         {
@@ -69,9 +94,17 @@ public class Controler
      */
     public void switchAction()
     {
-        selectedAction = (selectedAction == ACTION_HP) ? ACTION_PSN : ACTION_HP;
+        selectedAction = (selectedAction == ACTION_INC) ? ACTION_DEC : ACTION_INC;
         model.updateViews();
     }
+    
+    public void switchType()
+    {
+        selectedType = (selectedType == TYPE_HP) ? TYPE_PSN : TYPE_HP;
+        model.updateViews();
+    }
+    
+    
 
     /**
      * Select a player.
@@ -194,6 +227,16 @@ public class Controler
     public void setSelectedAction(int selectedAction)
     {
         this.selectedAction = selectedAction;
+    }
+
+    public int getSelectedType()
+    {
+        return selectedType;
+    }
+
+    public void setSelectedType(int selectedType)
+    {
+        this.selectedType = selectedType;
     }
     
     public void setModel(Model model)
