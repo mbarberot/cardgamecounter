@@ -24,6 +24,9 @@ public class View extends Canvas implements ModelListener, CommandListener
     private static final int S_MENUBAR = 15;
     private static final int S_SEPARATOR = 2;
     
+    private int[] xAreas;
+    private int[] yAreas;
+    
     /**
      * Controler
      */
@@ -53,7 +56,7 @@ public class View extends Canvas implements ModelListener, CommandListener
      */
     public View()
     {
-        this.setTitle("MTG counter");
+        this.setTitle("MTG counter");               
 
         this.pl2 = new Command("2 players", Command.ITEM, 0);
         this.pl3 = new Command("3 players", Command.ITEM, 0);
@@ -119,6 +122,7 @@ public class View extends Canvas implements ModelListener, CommandListener
     {
         try
         {
+            defineAreas();
             paintBackground(g);
             paintPlayers(g);
             paintButtons(g);
@@ -127,6 +131,49 @@ public class View extends Canvas implements ModelListener, CommandListener
             ex.printStackTrace();
         }
     }
+    
+    /**
+     * Instanciate both xAreas and yAreas arrays.
+     */
+    private void defineAreas()
+    {
+        defineXAreas();
+        defineYAreas();
+    }
+    
+    /**
+     * Instanciate the xAreas array that defines horizontal areas in the canvas.
+     */
+    private void defineXAreas()
+    {               
+        int marginLeft = getWidth() * 5 / 100 ;
+        int xPosHP = getWidth() * 50/100 + marginLeft ;
+        int xPosPSN = getWidth() * 75/100 + marginLeft ;        
+        
+        this.xAreas = new int[]{0, xPosHP, xPosPSN, getWidth()} ;
+    }
+    
+    /**
+     * Instanciate the yAreas array that defines vertical areas in the canvas.
+     */
+    private void defineYAreas()
+    {      
+        int npl = players.size();
+        int nAreas = npl + 2;
+        int y = S_MENUBAR ;
+        int dy = (getHeight() - S_MENUBAR) / npl ;
+        
+        this.yAreas = new int[nAreas] ;
+        
+        // Première case
+        yAreas[0] = 0;  
+        // Cases 1 -> n
+        for(int i = 1; i < nAreas; i++)
+        {
+            yAreas[i] = y;
+            y += dy ;            
+        }                             
+    }        
 
     /**
      * Paint the background
@@ -185,7 +232,7 @@ public class View extends Canvas implements ModelListener, CommandListener
     {
         int npl = players.size();
         int dy = (getHeight() - S_MENUBAR - (npl * S_SEPARATOR)) / npl;
-        int y = S_MENUBAR;
+        int y = yAreas[1];
         int sty = 0;
         Player p;
 
@@ -197,63 +244,62 @@ public class View extends Canvas implements ModelListener, CommandListener
 
             // Drawing separator line
             g.setColor(30,30,30);
-            g.fillRect(0, y, getWidth(), S_SEPARATOR);
-            
-            y += S_SEPARATOR;
-            
-            if (i == selectedPlayer) // Highlighted player ?
-            {
-                g.setColor(0, 125, 125);
-                g.fillRect(0, y, getWidth(), dy);
+            g.fillRect(0, yAreas[i+1], getWidth(), S_SEPARATOR);                       
+         
+            // 
+            // Have to draw anything spécial ?
+            //
+            if (i == selectedPlayer || i == winner || !p.isAlive()) 
+            {                
+                if (i == selectedPlayer)// Highlighted player ?
+                {
+                    g.setColor(0, 125, 125);
+                } 
+                
+                if (i == winner) // Winner player ?
+                {
+                    g.setColor(255, 125, 0);
+                } 
+                
+                if(!p.isAlive()) // Defated player ?
+                {
+                    g.setColor(125, 0, 0);
+                }
+                
+                g.fillRect(0, yAreas[i+1], getWidth(), dy);
             }
 
-            if (i == winner) // Winner player ?
-            {
-                g.setColor(255, 125, 0);
-                g.fillRect(0, y, getWidth(), dy);
-            }
-
-            // Defeated player ?
-            if (!p.isAlive())
-            {
-                g.setColor(125, 0, 0);
-                g.fillRect(0, y, getWidth(), dy);
-            }
-
-            // Increment to the next line
-            y += dy;
-
-            // Drawing the player
-            sty = y - (dy * 90/100); // Find the baseline
-            paintPlayer(sty, p, g);
+            // Drawing the player           
+            paintPlayer(p, g);
         }
     }
 
     /**
      * Paint a player
      *
-     * @param y Baseline for writing
      * @param p Player to draw
      * @param g Drawing tool
      */
-    public void paintPlayer(int y, Player p, Graphics g)
+    public void paintPlayer( Player p, Graphics g)
     {
         String nom = p.getName();
         String hp = p.getHp() + "";
         String psn = p.getPsn() + "";
 
-        int marginleft = getWidth() / 10;
-        int xnom = 0 + marginleft;
-        int xhp = getWidth() / 2 + marginleft;
-        int xpsn = getWidth() * 3 / 4 + marginleft;
+        int marginleft = getWidth() * 5 / 100;
+        int margintop = getHeight() * 5 / 100;
+        int baseline = yAreas[p.getId()+1] + margintop;        
+        int xnom = xAreas[0] + marginleft;
+        int xhp = xAreas[1] + marginleft;
+        int xpsn = xAreas[2] + marginleft;
 
         g.setColor(200,200,200);
         
-        g.drawString(nom, xnom, y, 0);
-        g.drawString(hp, xhp, y, 0);
-        g.drawString(psn, xpsn, y, 0);
+        g.drawString(nom, xnom, baseline, 0);
+        g.drawString(hp, xhp, baseline, 0);
+        g.drawString(psn, xpsn, baseline, 0);
     }
-
+    
     /**
      * Tactile events "on pressed"
      * 
@@ -262,83 +308,82 @@ public class View extends Canvas implements ModelListener, CommandListener
      */
     protected void pointerPressed(int x, int y)
     {
-        int npl = players.size();
-        int yval[] = getYZone(32, npl);
-        int xval[] = getXZone();
+        int xArea = getXArea(x);
+        int yArea = getYArea(y);
+               
+        //
+        // Is Menubar zone pressed ?
+        //
+        if(yArea == 0)
+        {
+            ctrl.switchAction();
+        }
+        else
+        {
+            // Important : conversion from yArea to player id !
+            // yArea = 1 means player one's area but player one's id = 0 !
+            ctrl.selectPlayer(yArea - 1);
+                        
+            switch(xArea)
+            {
+                case 0 : // Player's name area
+                    ctrl.switchUI(new EditNameUI(this, ctrl));
+                    break;
+                case 1 : // Player's HP -> do action
+                    ctrl.setSelectedType(Controler.TYPE_HP);
+                    ctrl.edit();
+                    break;
+                case 2 :
+                    ctrl.setSelectedType(Controler.TYPE_PSN);
+                    ctrl.edit();
+                    break;
+            }
+        }
+    }
         
-        int i = 0;
-        while(y > yval[i])
+    /**
+     * Return the horizontal area where the pointer was pressed
+     * @param x - x coord from the pointer
+     * @return -1 = Error, 0 = PlayerName, 1 = PlayerHP, 2 = PlayerPSN
+     */
+    private int getXArea (int x)
+    {
+        int i;
+        int len;       
+        
+        i = 0;
+        len = xAreas.length;       
+        while(x > xAreas[i] && i < len)
         {
             i++;
         }
         
-        int j = 0;
-        while(x > xval[j])
-        {
-            j++;
-        }
-        
-        switch(i)
-        {
-            case 1 : // Zone du bouton
-                ctrl.switchAction();
-                break;
-            case 2 : 
-                ctrl.selectPlayer(0);
-                break;
-            case 3 :
-                ctrl.selectPlayer(1);
-                break;
-            case 4 : 
-                ctrl.selectPlayer(2);
-                break;
-            case 5 : 
-                ctrl.selectPlayer(3);
-                break;
-        }
-        
-        switch(j)
-        {
-            case 0 : 
-                ctrl.switchUI(new EditNameUI(this, ctrl));
-                break;
-            case 1 : 
-                ctrl.setSelectedType(Controler.TYPE_HP);
-                ctrl.edit();
-                break;
-            case 2 :
-                ctrl.setSelectedType(Controler.TYPE_PSN);
-                ctrl.edit();
-        }
-       
-        
+        return i-1;
     }
     
-    private int[] getYZone(int y0, int nbz)
+    /**
+     * Return the vertical area where the pointer was pressed
+     * @param y - y coord from the pointer
+     * @return -1 = Error, 0 = Menubar, 1 = PlayerOne, 2 = PlayerTwo ...etc
+     */
+    private int getYArea (int y)
     {
-        int yzone[] = new int[nbz];
-        int dy = (getHeight() - y0) / nbz;
-        int ycur = y0;
+        int i;
+        int len;
         
-        
-        for(int i = 0; i < yzone.length; i++)
+        i = 0;
+        len = yAreas.length;        
+        while(y > yAreas[i] && i < len)
         {
-            yzone[i] = ycur;
-            ycur += dy;
+            i++;
         }
         
-        return yzone;
+        return i-1;
     }
     
-    private int[] getXZone()
-    {
-        int marginleft = getWidth() / 10;
-        int xnom = 0 + marginleft;
-        int xhp = getWidth() / 2 + marginleft;
-        int xpsn = getWidth() * 3 / 4 + marginleft;
-        
-        return new int[]{xnom,xhp,xpsn};
-    }
+  
+    
+   
     
     /**
      * Events "onKeyPressed"-like

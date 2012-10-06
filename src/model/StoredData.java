@@ -77,13 +77,11 @@ public class StoredData
         {
             if(records.getNumRecords() == 0)
             {
-                System.out.println("Create - Zero records");
                 for(int i = 0; i < RECORD_MAXPSN; i++)
                 {
                     value = getDefaultValue(i+1);
                     bytes = value.getBytes();
                     int j = records.addRecord(bytes, 0, bytes.length);
-                    System.out.println("Create - ID = "+j+" - Name = "+value);
                 }
             }
         }
@@ -118,8 +116,6 @@ public class StoredData
     {
         String str = "";
         
-        System.out.println("Piou - " + what);
-        
         if(records != null)
         {
             try
@@ -153,7 +149,6 @@ public class StoredData
         {
             try
             {
-                System.out.println("Write - ID = "+what+" - value = "+newValue);
                 records.setRecord(what, b, 0, b.length);
             } catch (RecordStoreNotOpenException ex)
             {
