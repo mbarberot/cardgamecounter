@@ -76,8 +76,8 @@ public class Controler
     
     public void edit()
     {
-        boolean inc = selectedAction == ACTION_INC ;
-        boolean hp = selectedType == TYPE_HP;
+        boolean inc = (selectedAction == ACTION_INC) ;
+        boolean hp = (selectedType == TYPE_HP) ;
         
         if(inc)
         {

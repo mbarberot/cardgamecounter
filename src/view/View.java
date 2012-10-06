@@ -3,8 +3,12 @@ package view;
 import controler.Controler;
 import java.io.IOException;
 import java.util.Vector;
-import javax.microedition.lcdui.*;
-import javax.microedition.lcdui.game.Sprite;
+import javax.microedition.lcdui.Canvas;
+import javax.microedition.lcdui.CommandListener;
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.Font;
 import model.Model;
 import model.Player;
 import utils.ModelListener;
@@ -17,7 +21,9 @@ import utils.ModelListener;
 public class View extends Canvas implements ModelListener, CommandListener
 {
     
-
+    private static final int S_MENUBAR = 15;
+    private static final int S_SEPARATOR = 2;
+    
     /**
      * Controler
      */
@@ -66,7 +72,7 @@ public class View extends Canvas implements ModelListener, CommandListener
         this.addCommand(exit);
 
         this.setCommandListener(this);
-
+        
     }
 
     /**
@@ -129,15 +135,11 @@ public class View extends Canvas implements ModelListener, CommandListener
      */
     private void paintBackground(Graphics g) throws IOException
     {
-        g.setColor(200, 200, 200);
-        g.fillRect(0, 0, getWidth(), getHeight());
-
-        Image bg = Image.createImage("/bg.png");
-        g.drawImage(bg, 0, 0, Graphics.TOP | Graphics.LEFT);
+        g.setColor(50, 50, 50);
+        g.fillRect(0, S_MENUBAR, getWidth(), getHeight());
         
-        Image menubar = Image.createImage("/menubar.png");
-        g.drawImage(menubar, 0, 0, Graphics.TOP | Graphics.LEFT);
-
+        g.setColor(0,125,0);
+        g.fillRect(0, 0, getWidth(), S_MENUBAR);
     }
 
     /**
@@ -147,6 +149,7 @@ public class View extends Canvas implements ModelListener, CommandListener
      */
     private void paintButtons(Graphics g) throws IOException
     {
+        /*
         String path;
         if(hasPointerEvents()) { path = (ctrl.getSelectedAction() == Controler.ACTION_DEC) ? "/minus.png" : "/plus.png"; }
         else { path = (ctrl.getSelectedType() == Controler.TYPE_HP) ? "/hp.png" : "/psn.png"; }
@@ -154,10 +157,25 @@ public class View extends Canvas implements ModelListener, CommandListener
 
         Image action = Image.createImage(path);
         g.drawImage(action, getWidth() / 2, 0, Graphics.HCENTER | Graphics.TOP);
-
-
+        */
+        
+        String action;
+        if(hasPointerEvents())
+        {
+            action = (ctrl.getSelectedAction() == Controler.ACTION_DEC) ? "-" : "+" ;
+        }
+        else
+        {
+            action = (ctrl.getSelectedType() == Controler.TYPE_HP) ? "HP" : "PSN" ;
+        }
+        
+        g.setColor(200,200,200);
+        g.drawString(action, getWidth()*45/100, 1, 0);
+        
     }
 
+    
+    
     /**
      * Paint the players
      *
@@ -166,58 +184,49 @@ public class View extends Canvas implements ModelListener, CommandListener
     private void paintPlayers(Graphics g) throws IOException
     {
         int npl = players.size();
-        int dy = (getHeight() - 32) / npl;
-        int y = 32;
+        int dy = (getHeight() - S_MENUBAR - (npl * S_SEPARATOR)) / npl;
+        int y = S_MENUBAR;
         int sty = 0;
         Player p;
 
-        g.setFont(Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_BOLD, Font.SIZE_LARGE));
+        g.setFont(Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_BOLD, Font.SIZE_MEDIUM));
 
         for (int i = 0; i < npl; i++)
         {
             p = (Player) players.elementAt(i);
 
-            // Highlighted player ?
-            if (i == selectedPlayer)
+            // Drawing separator line
+            g.setColor(30,30,30);
+            g.fillRect(0, y, getWidth(), S_SEPARATOR);
+            
+            y += S_SEPARATOR;
+            
+            if (i == selectedPlayer) // Highlighted player ?
             {
-                //g.setColor(0, 125, 125);
-                //g.fillRect(0, y, getWidth(), dy);
-                Image defeat = Image.createImage(Image.createImage("/select.png"), 0, y, getWidth(), dy, Sprite.TRANS_NONE);
-                g.drawImage(defeat, 0, y, Graphics.TOP | Graphics.LEFT);
+                g.setColor(0, 125, 125);
+                g.fillRect(0, y, getWidth(), dy);
             }
 
-            // Winner player ?
-            if (i == winner)
+            if (i == winner) // Winner player ?
             {
-                //g.setColor(255, 125, 0);
-                //g.fillRect(0, y, getWidth(), dy);
-                Image defeat = Image.createImage(Image.createImage("/victory.png"), 0, y, getWidth(), dy, Sprite.TRANS_NONE);
-                g.drawImage(defeat, 0, y, Graphics.TOP | Graphics.LEFT);
+                g.setColor(255, 125, 0);
+                g.fillRect(0, y, getWidth(), dy);
             }
 
             // Defeated player ?
             if (!p.isAlive())
             {
-                Image defeat = Image.createImage(Image.createImage("/defeat.png"), 0, y, getWidth(), dy, Sprite.TRANS_NONE);
-                g.drawImage(defeat, 0, y, Graphics.TOP | Graphics.LEFT);
-                //g.setColor(125, 0, 0);
-                //g.fillRect(0, y, getWidth(), dy);
-
+                g.setColor(125, 0, 0);
+                g.fillRect(0, y, getWidth(), dy);
             }
-
-            // Drawing separator line
-            g.setColor(30,30,30);
-            g.fillRect(0, y, getWidth(), 2);
-            //g.drawLine(0, y, getWidth(), y);
 
             // Increment to the next line
             y += dy;
 
             // Drawing the player
-            sty = y - (3 * dy / 5); // Find the baseline
+            sty = y - (dy * 90/100); // Find the baseline
             paintPlayer(sty, p, g);
         }
-
     }
 
     /**
@@ -229,7 +238,6 @@ public class View extends Canvas implements ModelListener, CommandListener
      */
     public void paintPlayer(int y, Player p, Graphics g)
     {
-        
         String nom = p.getName();
         String hp = p.getHp() + "";
         String psn = p.getPsn() + "";
@@ -400,32 +408,32 @@ public class View extends Canvas implements ModelListener, CommandListener
                     ctrl.setSelectedAction(Controler.ACTION_DEC);
                     ctrl.edit();
                     break;
-            }
-
-            // Arrow & Ok button
-            int nextPl;
-            int gameCode = getGameAction(keyCode);
-            switch (gameCode)
-            {
-                case FIRE:
-                    ctrl.switchType();
-                    break;
-                case UP:
-                    ctrl.setSelectedAction(Controler.ACTION_INC);
-                    ctrl.edit();
-                    break;
-                case DOWN:
-                    ctrl.setSelectedAction(Controler.ACTION_DEC);
-                    ctrl.edit();
-                    break;
-                case LEFT:
-                    nextPl = nextPlayer(false);
-                    ctrl.selectPlayer(nextPl);
-                    break;
-                case RIGHT:
-                    nextPl = nextPlayer(true);
-                    ctrl.selectPlayer(nextPl);
-                    break;
+                default:
+                    // Arrow & Ok button
+                    int nextPl;
+                    int gameCode = getGameAction(keyCode);
+                    switch (gameCode)
+                    {
+                        case FIRE:
+                            ctrl.switchType();
+                            break;
+                        case UP:
+                            ctrl.setSelectedAction(Controler.ACTION_INC);
+                            ctrl.edit();
+                            break;
+                        case DOWN:
+                            ctrl.setSelectedAction(Controler.ACTION_DEC);
+                            ctrl.edit();
+                            break;
+                        case LEFT:
+                            nextPl = nextPlayer(false);
+                            ctrl.selectPlayer(nextPl);                          
+                            break;
+                        case RIGHT:
+                            nextPl = nextPlayer(true);
+                            ctrl.selectPlayer(nextPl);
+                            break;
+                    }
             }
         }
     }

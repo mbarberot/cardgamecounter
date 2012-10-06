@@ -18,7 +18,12 @@ public class RandomUI extends Form implements CommandListener
     private View parent;
     private Controler ctrl;
     
+    private boolean flip ;
+    
+    private ImageItem picture ;
+    
     private Command back ;
+    private Command redo ;
     
     public RandomUI (View parent, Controler ctrl, int action)
     {
@@ -27,11 +32,25 @@ public class RandomUI extends Form implements CommandListener
         this.ctrl = ctrl;
         
         // Info
-        boolean flip = (action == FLIP_COIN);
+        this.flip = (action == FLIP_COIN);
         
         // New title
         this.setTitle(flip ? "Flip a coin" : "Roll a dice");
         
+        this.random();
+        this.append(picture);
+        
+        // Menu
+        back = new Command("Back", Command.BACK, 0);
+        redo = new Command((flip ? "Flip" : "Roll")+" again", Command.ITEM, 0);
+        this.addCommand(back);
+        this.addCommand(redo);
+        this.setCommandListener(this);
+        
+    }
+    
+    private void random()
+    {
         // Items
         String path = "/" 
                 + (flip ? "coin" : "dice") 
@@ -40,22 +59,14 @@ public class RandomUI extends Form implements CommandListener
         
         try
         {
-            ImageItem picture = new ImageItem(
+            picture = new ImageItem(
                     "",
                     Image.createImage(path),
                     ImageItem.LAYOUT_CENTER, 
                     path
                      );
-            this.append(picture);
             
         } catch (IOException ex) { ex.printStackTrace(); }
-        
-        
-        // Menu
-        back = new Command("Back", Command.BACK, 0);
-        this.addCommand(back);
-        this.setCommandListener(this);
-        
     }
     
     public void commandAction(Command c, Displayable d)
@@ -65,6 +76,11 @@ public class RandomUI extends Form implements CommandListener
             if(c == back)
             {
                 ctrl.switchUI(parent);
+            }
+            else if(c == redo)
+            {
+                random();
+                this.set(0, picture);
             }
         }
     }
