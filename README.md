@@ -4,8 +4,8 @@ CardGameCounter
 Description
 -----------
 
-This project is a counter designed for "Magic : The Gathering (c)" card game.
-He has been developed on Java ME (MIDP 2.0) for Mobile phones.
+This project is a counter designed for "Magic : The Gathering (c)" card game.  
+It has been developed on Java ME (MIDP 2.0) for Mobile phones.
 
 Features
 --------
