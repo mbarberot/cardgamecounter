@@ -1,0 +1,132 @@
+-----------------------------
+- CardGameCounter Project   -
+-			    -
+- Author : Barberot Mathieu -
+-			    -
+-----------------------------
+
+
+### Description ###
+
+This project is a counter designed for "Magic : The Gathering (c)" card game.
+He has been developed on Java ME (MIDP 2.0) for Mobile phones.
+
+//
+
+Ce projet est un compteur pour le jeu de cartes "Magic : L'assemblée (c)".
+Il a été développé avec Java ME (MIDP 2.0) pour téléphones portables.
+
+
+### Features / Fonctionalités ###
+
+Main features :
+- From 2 to 4 players
+- Count health points and poison counter
+- Roll a six-faced dice
+- Flip a coin
+- Set initial amount of Health Points
+- Set maximum poison counter
+- Change player's name.
+
+//
+
+Principales fonctionalités :
+- De 2 à 4 joueurs
+- Compte les points de vie et les marqueurs poison 
+- Lancer un dé à 6 faces
+- Lancer une pièce
+- Définir les points de vie au début de partie
+- Définir le nombre maximum de marqueurs poison
+- Changer les noms des joueurs
+
+
+### Compile / Compiler ###
+
+Method :
+
+1 - Pre-requisite :
+
+First, having Java Runtime Environnement and Java Developpement Kit installed.
+Then use an IDE such as Eclipse or Netbeans.
+Some versions already have the Sun Wireless Toolkit, if yours doesn't have this toolkit, download and install it.
+
+2 - Get the sources :
+
+If you read that README, you should have already download the sources.
+If not, go to http://code.google.com/p/trollscavern/ and user Subversion or download the zip.
+
+3 - Create a project :
+
+- Launch your IDE
+- Create an empty project
+- Replace the src/ folder by the download sources
+- Copy the img/ folder in the project folder and add it on "Resources"
+- In project properties, find the "Application Descriptors" tab, add "Run" to MIDlet and remove every other MIDlet.
+
+4 - Build and Run
+
+5 - On mobile phones
+
+- Upload .jad and .jar files on your phone.
+- From your phone find them and install them.
+
+
+//
+
+Méthode pour compiler :
+1 - Pré-requis : 
+   
+Premièrement, vous devez avoir la machine virtuelle Java (JRE) et le kit de developpement de Java d'installé.
+Il vous faudra également un Logiciel de développement (IDE) tel qu'Eclipse ou Netbeans.
+Certaines version contiennent les outils de développements pour les téléphones portables. Ci ce n'est pas le cas de votre version, téléchargez et installez le Sun Wireless Toolkit.
+
+2 - Récupérez les sources
+
+Si vous lisez ce README c'est que vous les avez probablement déjà téléchargés.
+Sinon allez sur http://code.google.com/p/trollscavern/ et utilisez Subversion ou téléchargez l'archive (zip ou tar.gz).
+Enfin décompressez l'archive.
+
+3 - Créez un projet
+
+- Lancez votre IDE préféré,
+- Créez un projet vide pour téléphone portable,
+- Remplacez le dossier src/ du projet par celui de l'archive,
+- Placez le dossier img/ dans le dossier du projet et ajoutez-le aux ressources,
+- Dans les propriétés du projet, trouvez l'onglet des descripteurs d'application : Ajoutez "Run" et supprimez les autres.
+
+4 - Compilez puis lancez le projet.
+
+5 - Sur téléphones portables :
+
+- Placez les fichier terminant par ".jad" et ".jar" sur votre téléphone.
+- Depuis votre téléphone, accédez à ces fichiers et installez-les.
+
+
+
+### FAQ ###
+
+Q - There is no images !
+A - img/ folder isn't in the project's Resources
+
+Q - I can't install this application on my phone
+A - Two answers possible :
+    1 - Your phone can't run MIDP 2.0 apps
+    2 - Your phone is not compatible*
+    Sun Wireless Toolkit seems to be compatible with Nokia phones only.
+
+//
+
+Q - Il n'y a pas d'images !
+R - Le dossier img/ n'est pas dans les ressources du projet.
+
+Q - L'application ne veut pas s'installer sur mon téléphone
+R - 2 possibilités :
+	Le téléphone n'est peut-être pas compatible avec MIDP 2.1
+	Le Sun Wireless Toolkit n'est pas compatible avec certaines marques de téléphones*. Essayer d'utiliser le ToolKit de la marque, généralement disponible sur leur site dans la partie développeur.	
+
+
+
+
+* Incompatible phones // Liste des téléphones incompatibles
+- Sony Ericson Z710i
+
