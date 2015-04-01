@@ -47,8 +47,11 @@ Note : some IDEs may include Sun Wireless Toolkit.
 
 ## FAQ
 
-Q - Why can't I install this application on my phone ?
-A - Two answers possible :
-    1 - Your phone can't run MIDP 2.0 apps
-    2 - Your phone is not compatible*
-    Sun Wireless Toolkit seems to be compatible with Nokia phones only.
+#### Why can't I install this application on my phone ?
+
+Two answers possible : 
+
+1. Your phone can't run MIDP 2.0 apps
+2. Your phone is not compatible
+
+Note : The Sun Wireless Toolkit seems to be compatible with Nokia phones only.
